@@ -12,11 +12,19 @@ public class DependencyInjector {
     public void injectDependencies(Map<String, Object> beans) throws Exception {
         for (Object bean : beans.values()) {
             Class<?> clazz = bean.getClass();
+            System.out.println("Инжектируем зависимости для бина: " + clazz.getName());
+
             for (Field field : clazz.getDeclaredFields()) {
                 if (field.isAnnotationPresent(CustomAutowired.class)) {
                     field.setAccessible(true);
                     Object dependency = resolveDependency(field, beans);
-                    field.set(bean, dependency);
+//                    field.set(bean, dependency);
+                    if (dependency != null) {
+                        System.out.println("Зависимость для поля " + field.getName() + " найдена: " + dependency);
+                        field.set(bean, dependency);
+                    } else {
+                        System.out.println("Зависимость для поля " + field.getName() + " не найдена");
+                    }
                 }
             }
         }

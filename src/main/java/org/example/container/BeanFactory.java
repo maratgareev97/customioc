@@ -46,6 +46,7 @@ public class BeanFactory {
 
                 // Сохраняем бин с именами всех интерфейсов, которые он реализует
                 for (Class<?> iface : clazz.getInterfaces()) {
+                    System.out.println("Регистрируем бин для интерфейса: " + iface.getName() + " с экземпляром: " + instance);
                     beans.put(iface.getName(), instance);
                 }
 
@@ -63,6 +64,8 @@ public class BeanFactory {
 
     // Метод для создания экземпляра класса
     private Object createInstance(Class<?> clazz) throws Exception {
+        System.out.println("Создаём экземпляр для класса: " + clazz.getName());
+
         // Ищем конструктор с аннотацией @CustomAutowired
         for (Constructor<?> constructor : clazz.getDeclaredConstructors()) {
             if (constructor.isAnnotationPresent(CustomAutowired.class)) {
@@ -70,12 +73,23 @@ public class BeanFactory {
                 Class<?>[] parameterTypes = constructor.getParameterTypes();
                 Object[] dependencies = new Object[parameterTypes.length];
 
+                System.out.println("Конструктор помечен @CustomAutowired: " + constructor.getName());
+
+
                 // Разрешаем зависимости для параметров конструктора
                 for (int i = 0; i < parameterTypes.length; i++) {
                     dependencies[i] = resolveDependency(parameterTypes[i], constructor.getParameterAnnotations()[i]);
                     if (dependencies[i] == null) {
+                        System.out.println("Зависимость не найдена для параметра: " + parameterTypes[i].getName());
+
                         throw new Exception("Зависимость не найдена для " + parameterTypes[i].getName());
                     }
+
+                    else {
+                        System.out.println("Зависимость найдена для параметра: " + parameterTypes[i].getName() + ", объект: " + dependencies[i]);
+                    }
+
+
                 }
                 // Создаем экземпляр через конструктор с параметрами
                 return constructor.newInstance(dependencies);
@@ -105,21 +119,33 @@ public class BeanFactory {
 
     // Метод для разрешения зависимостей (поиск бин-кандидата для инжекции)
     private Object resolveDependency(Class<?> type, Annotation[] annotations) {
+        System.out.println("Пытаемся найти бин для типа: " + type.getName());
+
+
         // Проверяем наличие аннотации @CustomQualifier
         String qualifierValue = null;
         for (Annotation annotation : annotations) {
             if (annotation instanceof CustomQualifier) {
                 qualifierValue = ((CustomQualifier) annotation).value();
+                System.out.println("Найдена аннотация @CustomQualifier с значением: " + qualifierValue);
+
                 break;
             }
         }
 
         // Если есть @CustomQualifier, ищем бин с данным квалификатором
         if (qualifierValue != null) {
-            return beans.get(qualifierValue);
+//            return beans.get(qualifierValue);
+            Object bean = beans.get(qualifierValue);
+            System.out.println(bean != null ? "Бин с квалификатором найден: " + qualifierValue : "Бин с квалификатором не найден: " + qualifierValue);
+            return bean;
         } else {
             // Если квалификатора нет, используем имя класса
-            return beans.get(type.getName());
+//            return beans.get(type.getName());
+
+            Object bean = beans.get(type.getName());
+            System.out.println(bean != null ? "Бин по типу найден: " + type.getName() : "Бин по типу не найден: " + type.getName());
+            return bean;
         }
     }
 

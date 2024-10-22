@@ -1,6 +1,7 @@
 package org.example;
 
 import org.example.container.Containers;
+import org.example.dao.AnotherDao;
 import org.example.services.ServiceOne;
 
 public class Main {
@@ -13,6 +14,11 @@ public class Main {
 
         ServiceOne serviceOne = (ServiceOne) containers.getBean(ServiceOne.class);
         serviceOne.serviceOne();  // Вызов метода ServiceOne
+
+//        AnotherDao anotherDao = (AnotherDao) containers.getBean(AnotherDao.class);
+//        System.out.println(anotherDao.getNum());
+//        System.out.println(anotherDao.getValue());
+//        System.out.println(anotherDao.getOrder());
 
         // При завершении программы уничтожаем бины
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
