@@ -8,13 +8,13 @@ import org.example.annotation.CustomQualifier;
 @CustomQualifier("daoTestThree")
 public class DAOTestThree implements DAOTest {
 
-//    @CustomAutowired
-//    private final AnotherDao anotherDao;
-//
-//    @CustomAutowired
-//    public DAOTestThree(AnotherDao anotherDao) {
-//        this.anotherDao = anotherDao;
-//    }
+    @CustomAutowired
+    private final AnotherDao anotherDao;
+
+    @CustomAutowired
+    public DAOTestThree(AnotherDao anotherDao) {
+        this.anotherDao = anotherDao;
+    }
 
     @Override
     public void daoTest() {

@@ -10,13 +10,10 @@ public class Containers {
     private final ClassScanner scanner = new ClassScanner();
 
     public void initialize(String basePackage) throws Exception {
-        // Сканирование классов
         var classNames = scanner.scan(basePackage);
 
-        // Регистрация бинов
         beanFactory.registerBeans(classNames);
 
-        // Инжекция зависимостей
         injector.injectDependencies(beanFactory.getAllBeans());
 
         System.out.println("Beans initialized: " + beanFactory.getAllBeans());
